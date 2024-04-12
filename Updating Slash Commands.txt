@@ -1,0 +1,1 @@
+type 'node deploy-commands.js' in the terminal
