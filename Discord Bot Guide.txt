@@ -1,0 +1,4 @@
+1215128157217234975 = announcement channel id for our test server (Change ID if put into new server/channel)
+
+Updating Slash (/) Commands
+type 'node deploy-commands.js' in the terminal
