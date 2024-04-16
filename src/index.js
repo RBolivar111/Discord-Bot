@@ -65,7 +65,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 });
 
-client.login('MTIxNDA0MTU5NjgyODU5MDEyMQ.G92mEL.YpDbBL3LbvuXb-kOIfrBzV8BrX9yq_CY0vw6jg');
+client.login('[Bot Token]');
 var Filter = require('bad-words'),
     filter = new Filter();
 
