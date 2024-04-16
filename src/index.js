@@ -65,7 +65,9 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 });
 
-client.login('[BOT TOKEN GOES HERE]');
+client.login('MTIxNDA0MTU5NjgyODU5MDEyMQ.G92mEL.YpDbBL3LbvuXb-kOIfrBzV8BrX9yq_CY0vw6jg');
+var Filter = require('bad-words'),
+    filter = new Filter();
 
 function scheduleMessages() {
     setInterval(() => {
@@ -156,6 +158,7 @@ function sendRandomInspirationalQuote(channel) {
     axios.get('https://api.quotable.io/random')
         .then((response) => {
             const quote = response.data.content;
+            quote = filter.clean(quote);
             sendAsBot(channel, `**Inspirational Quote:**\n ${quote}`, 0xAA4A44);
         })
         .catch((error) => {
@@ -167,6 +170,7 @@ function sendWeekenderQuotes(channel) {
     axios.get('https://api.quotable.io/quotes?tags=weekend')
         .then((response) => {
             const quotes = response.data.results;
+            quotes = filter.clean(quotes);
             quotes.forEach((quote) => {
                 sendAsBot(channel, `**Weekender Quote:**\n ${quote.content}`, 0xAA4A44);
             });
