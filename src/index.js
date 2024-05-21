@@ -65,7 +65,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 });
 
-client.login('BOT TOKEN GOES HERE');
+client.login('[BOT TOKEN GOES HERE]');
 var Filter = require('bad-words'),
     filter = new Filter();
 
@@ -90,16 +90,9 @@ function scheduleMessages() {
             scheduledMessages.push({ time: '22:00', content: 'Good night! Sleep tight.' });
         }
 
-        //Sends A News Article Every Weekday at 1pm
-        if (isWeekday(new Date().getDay())) {
-            if(isTimeWithinRange(currentTime, '13:00', '13:01')){
-                console.log("Sending News Article...")
-                sendNewsArticle(channel);
-            }
-        }
-
         let allMessagesSent = true; 
 
+        //Used to send messages that are stored in the array scheduledMessages
         for (const { time, content } of scheduledMessages) {
             if (isTimeWithinRange(currentTime, time, addMinutes(time, 1)) && !sentMessages.has(content)) {
                 sendAsBot(channel, content, 0xFFFF80);
@@ -113,7 +106,6 @@ function scheduleMessages() {
             sentMessages.clear();
         }
 
-
         //Sends General Meeting Reminder Every Monday at 9am
         if (new Date().getDay() === 1) {
             if (isTimeWithinRange(currentTime, '09:00', '09:01') && !sentMessages.has('meeting')) {
@@ -123,7 +115,7 @@ function scheduleMessages() {
             }
         }
 
-        //Sends Weekender Quote Every Fridady at 5pm
+        //Sends Weekender Quote Every Friday at 5pm
         if (new Date().getDay() === 5) {
             if (isTimeWithinRange(currentTime, '17:00', '17:01') && !sentMessages.has('weekender')) {
                 sendWeekenderQuotes(channel);
@@ -132,9 +124,19 @@ function scheduleMessages() {
         }
 
         //Sends Inspirational Message Every Monday, Wednesday, and Friday at 12nn
-        if (['1', '3', '5'].includes(new Date().getDay().toString()) && isTimeWithinRange(currentTime, '12:00', '12:01') && !sentMessages.has('inspirational')) {
+        if (['1', '3', '5'].includes(new Date().getDay().toString()) && isTimeWithinRange(currentTime, '12:00', '12:01')
+        && !sentMessages.has('inspirational')) {
             sendRandomInspirationalMessage(channel);
             sentMessages.add('inspirational');
+        }
+        
+                //Sends A News Article Every Weekday at 1pm
+        if (isWeekday(new Date().getDay())) {
+            if(isTimeWithinRange(currentTime, '13:00', '13:01') && !sentMessages.has('news')){
+                console.log("Sending News Article...")
+                sendNewsArticle(channel);
+                sentMessages.add('news');
+            }
         }
 
     }, 60000); // Check every minute
@@ -203,16 +205,21 @@ function sendRandomInspirationalMessage(channel) {
 }
 
 async function sendNewsArticle(channel) {
-    try{
+    try{        
+        //API used from newsapi.org (await makes it so that it can properly load and get the info we need but might take longer for it to send an article)
         //Randomly picks from the 10 most recent results from the query
         let articleNum = Math.floor(Math.random() * 10);
-        //API used from newsapi.org (await makes it so that it can properly load and get the info we need but might take longer for it to send an article)
         const response = await axios.get('https://newsapi.org/v2/everything?q=marketing&apiKey=9c6dc5ac03c34dbb9ad98feeea940a3a')
         console.log("News Article Received")
         const webURL = response.data.articles;
-        const link = webURL[articleNum].url
+        const link = webURL[articleNum].url;
+        //Prevents removed article links from being used.
+        if(link == "https://removed.com"){
+            sendNewsArticle(channel);
+        }
         channel.send(link)
         console.log("News Article Successfully Sent")
+         
     } catch(err){
         console.log(err);
     }
